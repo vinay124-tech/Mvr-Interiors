@@ -4,6 +4,9 @@ export const contact = {
   instagram: "https://www.instagram.com/mvrinteriors.hyd/",
 };
 
+// Enquiry notifications are emailed here. Can be overridden with the LEAD_INBOX_EMAIL secret.
+export const leadInbox = "";
+
 export const images = {
   hero: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=2200&q=88",
   about: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1400&q=85",
