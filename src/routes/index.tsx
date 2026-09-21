@@ -159,6 +159,7 @@ function HomePage() {
 
       <footer className="bg-primary text-primary-foreground"><div className="mx-auto max-w-[1440px] px-5 py-12 lg:px-10"><div className="flex flex-col justify-between gap-10 border-b border-primary-foreground/20 pb-10 sm:flex-row sm:items-center"><div className="flex items-center gap-5"><img src={logoAsset.url} alt="MVR Interiors" className="h-24 w-24 rounded-full object-cover ring-1 ring-primary-foreground/20" /><div><p className="font-display text-3xl">MVR Interiors</p><p className="mt-2 text-xs uppercase tracking-[0.15em] text-primary-foreground/60">Interior Design & Execution</p></div></div><div className="flex items-center gap-6"><a href={contact.instagram} target="_blank" rel="noreferrer" aria-label="MVR Interiors on Instagram"><Instagram /></a><WhatsAppLink><MessageCircle /><span className="sr-only">MVR Interiors on WhatsApp</span></WhatsAppLink></div></div><div className="flex flex-col justify-between gap-3 pt-6 text-[10px] uppercase tracking-[0.12em] text-primary-foreground/55 sm:flex-row"><span>Hyderabad · Bengaluru · Nandyal · Andhra Pradesh</span><span>© {new Date().getFullYear()} MVR Interiors. All rights reserved.</span></div></div></footer>
       <WhatsAppLink className="fixed bottom-5 right-5 z-40 grid h-14 w-14 place-items-center rounded-full bg-whatsapp text-whatsapp-foreground shadow-lg transition-transform hover:scale-105 md:hidden"><MessageCircle size={24} /><span className="sr-only">Chat with MVR Interiors on WhatsApp</span></WhatsAppLink>
+      <ConsultPopup />
     </main>
   );
 }
