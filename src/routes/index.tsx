@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { contact, images, projects, services } from "@/data/site-content";
 import { enquirySchema, whatsappText } from "@/lib/enquiry";
 import logoAsset from "@/assets/mvr-logo.webp.asset.json";
+import { ConsultPopup } from "@/components/ConsultPopup";
 
 const description = "MVR Interiors is a Hyderabad-based interior design and execution studio delivering thoughtful residential spaces across South India.";
 
