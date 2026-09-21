@@ -3,6 +3,7 @@ import { ArrowDown, ArrowRight, Check, Instagram, Menu, MessageCircle, X } from 
 import { useEffect, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { contact, images, projects, services } from "@/data/site-content";
+import { enquirySchema, whatsappText } from "@/lib/enquiry";
 import logoAsset from "@/assets/mvr-logo.webp.asset.json";
 
 const description = "MVR Interiors is a Hyderabad-based interior design and execution studio delivering thoughtful residential spaces across South India.";
@@ -39,7 +40,8 @@ function WhatsAppLink({ children, className = "" }: { children: React.ReactNode;
 function HomePage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [sent, setSent] = useState(false);
+  const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30);
@@ -48,14 +50,33 @@ function HomePage() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  function submitEnquiry(event: FormEvent<HTMLFormElement>) {
+  async function submitEnquiry(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     if (!form.reportValidity()) return;
-    const data = new FormData(form);
-    const message = `Hello MVR Interiors, I'd like to request a consultation.%0A%0AName: ${data.get("name")}%0APhone: ${data.get("phone")}%0ALocation: ${data.get("location")}%0AProject type: ${data.get("type")}%0AMessage: ${data.get("message")}`;
-    window.open(`${contact.whatsapp}?text=${message}`, "_blank", "noopener,noreferrer");
-    setSent(true);
+    const parsed = enquirySchema.safeParse(Object.fromEntries(new FormData(form)));
+    if (!parsed.success) {
+      setError(parsed.error.issues[0]?.message ?? "Please check the details entered.");
+      return;
+    }
+    setError("");
+    setStatus("sending");
+
+    const chat = window.open("", "_blank", "noopener,noreferrer");
+    try {
+      await fetch("/api/public/enquiry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(parsed.data),
+      });
+    } catch {
+      /* WhatsApp handoff still proceeds */
+    }
+
+    const url = `${contact.whatsapp}?text=${encodeURIComponent(whatsappText(parsed.data))}`;
+    if (chat) chat.location.href = url;
+    else window.open(url, "_blank", "noopener,noreferrer");
+    setStatus("sent");
     form.reset();
   }
 
@@ -133,7 +154,7 @@ function HomePage() {
 
       <section className="border-y border-border bg-accent"><div className="mx-auto flex max-w-[1300px] flex-col items-start justify-between gap-8 px-5 py-14 lg:flex-row lg:items-center lg:px-10"><div><p className="eyebrow">Start a conversation</p><h2 className="font-display text-4xl font-normal sm:text-5xl">Planning Your Next Space?</h2></div><div className="flex flex-wrap gap-3"><WhatsAppLink className="inline-flex min-h-12 items-center gap-2 bg-primary px-6 text-xs font-semibold uppercase tracking-[0.16em] text-primary-foreground"><MessageCircle size={17} /> WhatsApp Us</WhatsAppLink><a href="#contact" className="inline-flex min-h-12 items-center border border-primary px-6 text-xs font-semibold uppercase tracking-[0.16em]">Send an Enquiry</a></div></div></section>
 
-      <section id="contact" className="section-space scroll-mt-16"><div className="mx-auto grid max-w-[1200px] gap-14 px-5 lg:grid-cols-[0.75fr_1.25fr] lg:px-10"><div><p className="eyebrow">Contact</p><h2 className="section-title">Let’s Talk About Your Space.</h2><p className="mt-6 max-w-sm leading-7 text-muted-foreground">Share a few details about your project. Your enquiry will open in WhatsApp so our team can respond personally.</p><div className="mt-10 space-y-3 text-sm"><p>Hyderabad, Telangana, India</p><a className="block underline underline-offset-4" href={`tel:${contact.phone.replaceAll(" ", "")}`}>{contact.phone}</a></div></div><form onSubmit={submitEnquiry} className="grid gap-x-5 gap-y-6 sm:grid-cols-2" noValidate><Field label="Name" name="name" required /><Field label="Phone Number" name="phone" required pattern="[0-9+ ]{10,16}" /><Field label="Project Location" name="location" required /><label className="field-label">Project Type<select name="type" required className="field-input"><option value="">Select a project type</option><option>Complete Home Interiors</option><option>Living Room</option><option>Bedroom</option><option>Modular Kitchen</option><option>Wardrobes & Storage</option><option>Other</option></select></label><label className="field-label sm:col-span-2">Message<textarea name="message" required rows={4} className="field-input resize-none" placeholder="Tell us a little about your space" /></label><div className="sm:col-span-2"><Button type="submit" variant="solid" size="lg" className="min-h-12 rounded-none px-6 text-xs uppercase tracking-[0.16em]">Request a Consultation <ArrowRight size={16} /></Button>{sent && <p className="mt-4 text-sm text-muted-foreground" role="status">Your enquiry is ready in WhatsApp. Please send it to complete your request.</p>}</div></form></div></section>
+      <section id="contact" className="section-space scroll-mt-16"><div className="mx-auto grid max-w-[1200px] gap-14 px-5 lg:grid-cols-[0.75fr_1.25fr] lg:px-10"><div><p className="eyebrow">Contact</p><h2 className="section-title">Let’s Talk About Your Space.</h2><p className="mt-6 max-w-sm leading-7 text-muted-foreground">Share a few details about your project. Your enquiry will open in WhatsApp so our team can respond personally.</p><div className="mt-10 space-y-3 text-sm"><p>Hyderabad, Telangana, India</p><a className="block underline underline-offset-4" href={`tel:${contact.phone.replaceAll(" ", "")}`}>{contact.phone}</a></div></div><form onSubmit={submitEnquiry} className="grid gap-x-5 gap-y-6 sm:grid-cols-2" noValidate><Field label="Name" name="name" required /><Field label="Phone Number" name="phone" required pattern="[0-9+ ]{10,16}" /><Field label="Project Location" name="location" required /><label className="field-label">Project Type<select name="type" required className="field-input"><option value="">Select a project type</option><option>Complete Home Interiors</option><option>Living Room</option><option>Bedroom</option><option>Modular Kitchen</option><option>Wardrobes & Storage</option><option>Other</option></select></label><label className="field-label sm:col-span-2">Message<textarea name="message" required rows={4} className="field-input resize-none" placeholder="Tell us a little about your space" /></label><div className="sm:col-span-2"><Button type="submit" disabled={status === "sending"} variant="solid" size="lg" className="min-h-12 rounded-none px-6 text-xs uppercase tracking-[0.16em]">{status === "sending" ? "Sending…" : "Request a Consultation"} <ArrowRight size={16} /></Button>{error && <p className="mt-4 text-sm text-destructive" role="alert">{error}</p>}{status === "sent" && <p className="mt-4 border border-border bg-secondary p-4 text-sm leading-6 text-muted-foreground" role="status">Thank you — your enquiry has been sent to our studio inbox, and WhatsApp has opened so you can chat with us right away.</p>}</div></form></div></section>
 
       <footer className="bg-primary text-primary-foreground"><div className="mx-auto max-w-[1440px] px-5 py-12 lg:px-10"><div className="flex flex-col justify-between gap-10 border-b border-primary-foreground/20 pb-10 sm:flex-row sm:items-center"><div className="flex items-center gap-5"><img src={logoAsset.url} alt="MVR Interiors" className="h-24 w-24 rounded-full object-cover ring-1 ring-primary-foreground/20" /><div><p className="font-display text-3xl">MVR Interiors</p><p className="mt-2 text-xs uppercase tracking-[0.15em] text-primary-foreground/60">Interior Design & Execution</p></div></div><div className="flex items-center gap-6"><a href={contact.instagram} target="_blank" rel="noreferrer" aria-label="MVR Interiors on Instagram"><Instagram /></a><WhatsAppLink><MessageCircle /><span className="sr-only">MVR Interiors on WhatsApp</span></WhatsAppLink></div></div><div className="flex flex-col justify-between gap-3 pt-6 text-[10px] uppercase tracking-[0.12em] text-primary-foreground/55 sm:flex-row"><span>Hyderabad · Bengaluru · Nandyal · Andhra Pradesh</span><span>© {new Date().getFullYear()} MVR Interiors. All rights reserved.</span></div></div></footer>
       <WhatsAppLink className="fixed bottom-5 right-5 z-40 grid h-14 w-14 place-items-center rounded-full bg-whatsapp text-whatsapp-foreground shadow-lg transition-transform hover:scale-105 md:hidden"><MessageCircle size={24} /><span className="sr-only">Chat with MVR Interiors on WhatsApp</span></WhatsAppLink>
