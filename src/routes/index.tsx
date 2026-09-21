@@ -3,6 +3,7 @@ import { ArrowDown, ArrowRight, Check, Instagram, Menu, MessageCircle, X } from 
 import { useEffect, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { contact, images, projects, services } from "@/data/site-content";
+import { enquirySchema, whatsappText } from "@/lib/enquiry";
 import logoAsset from "@/assets/mvr-logo.webp.asset.json";
 
 const description = "MVR Interiors is a Hyderabad-based interior design and execution studio delivering thoughtful residential spaces across South India.";
@@ -39,7 +40,8 @@ function WhatsAppLink({ children, className = "" }: { children: React.ReactNode;
 function HomePage() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [sent, setSent] = useState(false);
+  const [status, setStatus] = useState<"idle" | "sending" | "sent">("idle");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30);
@@ -48,14 +50,33 @@ function HomePage() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  function submitEnquiry(event: FormEvent<HTMLFormElement>) {
+  async function submitEnquiry(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     if (!form.reportValidity()) return;
-    const data = new FormData(form);
-    const message = `Hello MVR Interiors, I'd like to request a consultation.%0A%0AName: ${data.get("name")}%0APhone: ${data.get("phone")}%0ALocation: ${data.get("location")}%0AProject type: ${data.get("type")}%0AMessage: ${data.get("message")}`;
-    window.open(`${contact.whatsapp}?text=${message}`, "_blank", "noopener,noreferrer");
-    setSent(true);
+    const parsed = enquirySchema.safeParse(Object.fromEntries(new FormData(form)));
+    if (!parsed.success) {
+      setError(parsed.error.issues[0]?.message ?? "Please check the details entered.");
+      return;
+    }
+    setError("");
+    setStatus("sending");
+
+    const chat = window.open("", "_blank", "noopener,noreferrer");
+    try {
+      await fetch("/api/public/enquiry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(parsed.data),
+      });
+    } catch {
+      /* WhatsApp handoff still proceeds */
+    }
+
+    const url = `${contact.whatsapp}?text=${encodeURIComponent(whatsappText(parsed.data))}`;
+    if (chat) chat.location.href = url;
+    else window.open(url, "_blank", "noopener,noreferrer");
+    setStatus("sent");
     form.reset();
   }
 
