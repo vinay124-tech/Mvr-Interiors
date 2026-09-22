@@ -112,7 +112,7 @@ function HomePage() {
             <p className="mt-5 text-[11px] uppercase tracking-[0.14em] text-primary-foreground/75">Hyderabad&nbsp; | &nbsp;Bengaluru&nbsp; | &nbsp;Nandyal&nbsp; | &nbsp;Andhra Pradesh</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <WhatsAppLink className="inline-flex min-h-12 items-center gap-2 bg-background px-6 text-xs font-semibold uppercase tracking-[0.16em] text-foreground transition-colors hover:bg-accent"><MessageCircle size={17} /> WhatsApp Us</WhatsAppLink>
-              <a href="#projects" className="inline-flex min-h-12 items-center gap-2 border border-primary-foreground/60 px-6 text-xs font-semibold uppercase tracking-[0.16em] transition-colors hover:bg-primary-foreground hover:text-foreground">Explore Our Projects <ArrowRight size={16} /></a>
+              <a href="#contact" className="inline-flex min-h-12 items-center gap-2 border border-primary-foreground/60 px-6 text-xs font-semibold uppercase tracking-[0.16em] transition-colors hover:bg-primary-foreground hover:text-foreground">Get Free Consultation <ArrowRight size={16} /></a>
             </div>
           </div>
           <a href="#about" className="absolute bottom-8 right-10 hidden items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-primary-foreground lg:flex">Scroll to discover <ArrowDown size={15} /></a>
