@@ -51,6 +51,30 @@ function HomePage() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Always start at the top on a fresh visit, then invite the form after 20s.
+  useEffect(() => {
+    if (window.location.hash) {
+      window.history.replaceState(null, "", window.location.pathname);
+      window.scrollTo(0, 0);
+    }
+    const KEY = "mvr-form-autoscrolled";
+    if (sessionStorage.getItem(KEY)) return;
+    const timer = window.setTimeout(() => {
+      const form = document.getElementById("contact");
+      if (!form) return;
+      const seen = form.getBoundingClientRect().top < window.innerHeight;
+      sessionStorage.setItem(KEY, "1");
+      if (!seen) form.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 20000);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  function scrollToContact(event: React.MouseEvent<HTMLAnchorElement>) {
+    event.preventDefault();
+    sessionStorage.setItem("mvr-form-autoscrolled", "1");
+    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   async function submitEnquiry(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
