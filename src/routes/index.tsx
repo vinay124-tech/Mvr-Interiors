@@ -132,13 +132,6 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="bg-primary text-primary-foreground">
-        <div className="mx-auto grid max-w-[1440px] lg:grid-cols-2">
-          <img src={images.founder} alt="Portrait placeholder for MV Ramana, founder of MVR Interiors" className="h-full min-h-[500px] w-full object-cover object-top grayscale" />
-          <div className="flex items-center px-5 py-16 lg:px-20 lg:py-24"><div><p className="eyebrow text-primary-foreground/60">Founder</p><h2 className="section-title max-w-xl">The Vision Behind MVR Interiors</h2><div className="mt-8 max-w-xl space-y-5 leading-8 text-primary-foreground/75"><p>MV Ramana’s journey in interior design and execution spans around three decades—shaped by hands-on experience, enduring client relationships and a deep respect for how people inhabit their spaces.</p><p>Across Hyderabad, Bengaluru, Nandyal and Andhra Pradesh, his work is guided by empathy: listening before drawing, solving before styling, and staying closely involved until every detail is complete.</p></div><div className="mt-10 border-t border-primary-foreground/20 pt-5"><strong className="font-display text-2xl font-normal">MV Ramana</strong><span className="ml-3 text-[10px] uppercase tracking-[0.16em] text-primary-foreground/60">Founder, MVR Interiors</span></div></div></div>
-        </div>
-      </section>
-
       <section id="services" className="section-space scroll-mt-16">
         <div className="mx-auto max-w-[1300px] px-5 lg:px-10"><div className="grid gap-7 border-b border-border pb-10 lg:grid-cols-2 lg:items-end"><div><p className="eyebrow">What We Do</p><h2 className="section-title">Complete Interiors,<br />Considered End to End.</h2></div><p className="max-w-lg leading-7 text-muted-foreground lg:justify-self-end">From individual rooms to complete homes, we coordinate the creative and practical work required to bring a space together.</p></div><div className="grid sm:grid-cols-2 lg:grid-cols-3">{services.map((service, i) => <div key={service} className="group border-b border-border py-7 sm:px-6 sm:first:pl-0 lg:min-h-36 lg:border-r lg:p-8 lg:first:pl-0"><span className="text-[10px] text-muted-foreground">0{i + 1}</span><h3 className="mt-7 flex items-center justify-between font-display text-2xl font-normal"><span>{service}</span><ArrowRight className="opacity-30 transition-transform group-hover:translate-x-1 group-hover:opacity-100" size={18} /></h3></div>)}</div></div>
       </section>
