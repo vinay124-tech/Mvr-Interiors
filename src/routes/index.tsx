@@ -51,6 +51,30 @@ function HomePage() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Always start at the top on a fresh visit, then invite the form after 20s.
+  useEffect(() => {
+    if (window.location.hash) {
+      window.history.replaceState(null, "", window.location.pathname);
+      window.scrollTo(0, 0);
+    }
+    const KEY = "mvr-form-autoscrolled";
+    if (sessionStorage.getItem(KEY)) return;
+    const timer = window.setTimeout(() => {
+      const form = document.getElementById("contact");
+      if (!form) return;
+      const seen = form.getBoundingClientRect().top < window.innerHeight;
+      sessionStorage.setItem(KEY, "1");
+      if (!seen) form.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 20000);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  function scrollToContact(event: React.MouseEvent<HTMLAnchorElement>) {
+    event.preventDefault();
+    sessionStorage.setItem("mvr-form-autoscrolled", "1");
+    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   async function submitEnquiry(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
@@ -112,7 +136,7 @@ function HomePage() {
             <p className="mt-5 text-[11px] uppercase tracking-[0.14em] text-primary-foreground/75">Hyderabad&nbsp; | &nbsp;Bengaluru&nbsp; | &nbsp;Nandyal&nbsp; | &nbsp;Andhra Pradesh</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <WhatsAppLink className="inline-flex min-h-12 items-center gap-2 bg-background px-6 text-xs font-semibold uppercase tracking-[0.16em] text-foreground transition-colors hover:bg-accent"><MessageCircle size={17} /> WhatsApp Us</WhatsAppLink>
-              <a href="#contact" className="inline-flex min-h-12 items-center gap-2 border border-primary-foreground/60 px-6 text-xs font-semibold uppercase tracking-[0.16em] transition-colors hover:bg-primary-foreground hover:text-foreground">Get Free Consultation <ArrowRight size={16} /></a>
+              <a href="#contact" onClick={scrollToContact} className="inline-flex min-h-12 items-center gap-2 border border-primary-foreground/60 px-6 text-xs font-semibold uppercase tracking-[0.16em] transition-colors hover:bg-primary-foreground hover:text-foreground">Get Free Consultation <ArrowRight size={16} /></a>
             </div>
           </div>
           <a href="#about" className="absolute bottom-8 right-10 hidden items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-primary-foreground lg:flex">Scroll to discover <ArrowDown size={15} /></a>
@@ -146,7 +170,7 @@ function HomePage() {
 
       <section className="section-space"><div className="mx-auto max-w-[1100px] px-5 text-center lg:px-10"><p className="eyebrow">Client Trust</p><h2 className="section-title">Built on Experience.<br />Sustained by Trust.</h2><div className="mx-auto mt-12 grid max-w-4xl gap-px bg-border sm:grid-cols-3">{["Around three decades of hands-on practice", "300+ completed interior projects", "Work delivered across 4+ locations"].map((item) => <div key={item} className="flex min-h-36 items-center justify-center bg-background p-7"><Check className="mr-3 shrink-0 text-accent-foreground" size={18} /><span className="text-sm leading-6">{item}</span></div>)}</div><p className="mt-7 text-sm italic text-muted-foreground">Client testimonials will be added here as verified project feedback becomes available.</p></div></section>
 
-      <section className="border-y border-border bg-accent"><div className="mx-auto flex max-w-[1300px] flex-col items-start justify-between gap-8 px-5 py-14 lg:flex-row lg:items-center lg:px-10"><div><p className="eyebrow">Start a conversation</p><h2 className="font-display text-4xl font-normal sm:text-5xl">Planning Your Next Space?</h2></div><div className="flex flex-wrap gap-3"><WhatsAppLink className="inline-flex min-h-12 items-center gap-2 bg-primary px-6 text-xs font-semibold uppercase tracking-[0.16em] text-primary-foreground"><MessageCircle size={17} /> WhatsApp Us</WhatsAppLink><a href="#contact" className="inline-flex min-h-12 items-center border border-primary px-6 text-xs font-semibold uppercase tracking-[0.16em]">Send an Enquiry</a></div></div></section>
+      <section className="border-y border-border bg-accent"><div className="mx-auto flex max-w-[1300px] flex-col items-start justify-between gap-8 px-5 py-14 lg:flex-row lg:items-center lg:px-10"><div><p className="eyebrow">Start a conversation</p><h2 className="font-display text-4xl font-normal sm:text-5xl">Planning Your Next Space?</h2></div><div className="flex flex-wrap gap-3"><WhatsAppLink className="inline-flex min-h-12 items-center gap-2 bg-primary px-6 text-xs font-semibold uppercase tracking-[0.16em] text-primary-foreground"><MessageCircle size={17} /> WhatsApp Us</WhatsAppLink><a href="#contact" onClick={scrollToContact} className="inline-flex min-h-12 items-center border border-primary px-6 text-xs font-semibold uppercase tracking-[0.16em]">Send an Enquiry</a></div></div></section>
 
       <section id="contact" className="section-space scroll-mt-16"><div className="mx-auto grid max-w-[1200px] gap-14 px-5 lg:grid-cols-[0.75fr_1.25fr] lg:px-10"><div><p className="eyebrow">Contact</p><h2 className="section-title">Let’s Talk About Your Space.</h2><p className="mt-6 max-w-sm leading-7 text-muted-foreground">Share a few details about your project. Your enquiry will open in WhatsApp so our team can respond personally.</p><div className="mt-10 space-y-3 text-sm"><p>Hyderabad, Telangana, India</p><a className="block underline underline-offset-4" href={`tel:${contact.phone.replaceAll(" ", "")}`}>{contact.phone}</a></div></div><form onSubmit={submitEnquiry} className="grid gap-x-5 gap-y-6 sm:grid-cols-2" noValidate><Field label="Name" name="name" required /><Field label="Phone Number" name="phone" required pattern="[0-9+ ]{10,16}" /><Field label="Project Location" name="location" required /><label className="field-label">Project Type<select name="type" required className="field-input"><option value="">Select a project type</option><option>Complete Home Interiors</option><option>Living Room</option><option>Bedroom</option><option>Modular Kitchen</option><option>Wardrobes & Storage</option><option>Other</option></select></label><label className="field-label sm:col-span-2">Message<textarea name="message" required rows={4} className="field-input resize-none" placeholder="Tell us a little about your space" /></label><div className="sm:col-span-2"><Button type="submit" disabled={status === "sending"} variant="solid" size="lg" className="min-h-12 rounded-none px-6 text-xs uppercase tracking-[0.16em]">{status === "sending" ? "Sending…" : "Request a Consultation"} <ArrowRight size={16} /></Button>{error && <p className="mt-4 text-sm text-destructive" role="alert">{error}</p>}{status === "sent" && <p className="mt-4 border border-border bg-secondary p-4 text-sm leading-6 text-muted-foreground" role="status">Thank you — your enquiry has been sent to our studio inbox, and WhatsApp has opened so you can chat with us right away.</p>}</div></form></div></section>
 
