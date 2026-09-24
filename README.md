@@ -1,9 +1,5 @@
 # MVR Interiors Landing
 
-Implement the requested scope now; use internal planning and do not present another implementation plan for user approval.
-
-Build a premium, modern, responsive single-page landing website for MVR Interiors, an interior design and execution studio founded by MV Ramana in Hyderabad.
-
 PRIMARY GOAL: Lead generation. Establish an authentic, trustworthy, established interior-design studio presence.
 
 DESIGN DIRECTION:
