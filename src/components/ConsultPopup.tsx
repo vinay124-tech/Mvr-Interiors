@@ -1,7 +1,6 @@
 import { MessageCircle, Phone, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { contact } from "@/data/site-content";
-import logoAsset from "@/assets/mvr-logo.webp.asset.json";
 
 const KEY = "mvr-consult-prompt-dismissed";
 const greeting = encodeURIComponent(
@@ -40,7 +39,7 @@ export function ConsultPopup() {
           <X size={17} />
         </button>
         <img
-          src={logoAsset.url}
+          src="/mvr-logo.webp"
           alt="MVR Interiors"
           className="h-14 w-14 rounded-full object-cover ring-1 ring-border"
         />
