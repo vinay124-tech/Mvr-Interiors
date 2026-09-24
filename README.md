@@ -4,17 +4,6 @@ Implement the requested scope now; use internal planning and do not present anot
 
 Build a premium, modern, responsive single-page landing website for MVR Interiors, an interior design and execution studio founded by MV Ramana in Hyderabad.
 
-User requirements:
-
-BUSINESS INFORMATION:
-- Brand: MVR Interiors
-- Location: Hyderabad, Telangana, India
-- Founder: MV Ramana (around 30 years in interior design and execution; do not mention his age)
-- Projects completed: 300+
-- Service locations: Hyderabad, Bengaluru, Nandyal, and Andhra Pradesh
-- WhatsApp: +91 85000 97799 (direct link: https://wa.me/918500097799)
-- Instagram: https://www.instagram.com/mvrinteriors.hyd/
-
 PRIMARY GOAL: Lead generation. Establish an authentic, trustworthy, established interior-design studio presence.
 
 DESIGN DIRECTION:
